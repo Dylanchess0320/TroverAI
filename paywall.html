@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unlock Pro — Trover AI</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #07070f; color: #ededff;
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: #0d0d1c; border: 1px solid rgba(255,255,255,.07);
+      border-radius: 20px; padding: 36px 32px; max-width: 420px; width: 100%;
+      text-align: center;
+    }
+    .logo { font-size: 36px; margin-bottom: 16px; }
+    h1 { font-size: 22px; font-weight: 800; margin-bottom: 8px; color: #fff; }
+    .sub { font-size: 14px; color: #9898b8; line-height: 1.6; margin-bottom: 28px; }
+    .amount-display {
+      background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.3);
+      border-radius: 12px; padding: 12px 20px; margin-bottom: 24px;
+      font-size: 18px; font-weight: 700; color: #f59e0b;
+    }
+    #paypal-button-container { margin-bottom: 20px; }
+    .divider { display:flex; align-items:center; gap:10px; color:#4a4a6a; font-size:12px; margin-bottom:16px; }
+    .divider::before,.divider::after { content:''; flex:1; height:1px; background:rgba(255,255,255,.07); }
+    .key-box {
+      display: none; background: #111122; border: 1px solid rgba(124,58,237,.4);
+      border-radius: 12px; padding: 16px; margin-bottom: 16px;
+    }
+    .key-box.visible { display: block; }
+    .key-label { font-size: 11px; color: #6b6b8a; text-transform: uppercase; letter-spacing: .7px; margin-bottom: 8px; }
+    .key-value {
+      font-family: 'SF Mono', ui-monospace, monospace; font-size: 15px;
+      color: #a78bfa; letter-spacing: 1px; margin-bottom: 12px; word-break: break-all;
+    }
+    .copy-btn {
+      width: 100%; padding: 10px; border-radius: 9px;
+      background: linear-gradient(135deg,#7c3aed,#4338ca); border: none;
+      color: #fff; font-size: 13px; font-weight: 600; cursor: pointer;
+      font-family: inherit; transition: opacity .15s;
+    }
+    .copy-btn:hover { opacity: .85; }
+    .manual-note { font-size: 12px; color: #6b6b8a; line-height: 1.6; }
+    .manual-note a { color: #7c3aed; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">⚡</div>
+  <h1>Unlock Trover AI Pro</h1>
+  <p class="sub">Complete your donation below to unlock Pro. Your key will be sent to you within 24 hours.</p>
+
+  <div class="amount-display" id="amountDisplay">$1.00</div>
+
+  <div id="paypal-button-container"></div>
+
+  <div class="divider" id="manualDivider" style="display:none;">or enter key manually</div>
+  <p class="manual-note" id="manualNote" style="display:none;"></p>
+
+  <div class="key-box" id="keyBox">
+    <div class="key-label">Your Pro License Key</div>
+    <div class="key-value" id="keyDisplay"></div>
+    <button class="copy-btn" id="copyBtn">Copy Key</button>
+  </div>
+</div>
+
+<script>
+  const params  = new URLSearchParams(location.search);
+  const amount  = parseFloat(params.get('amount') || '1.00').toFixed(2);
+  const extId   = params.get('ext') || '';
+  document.getElementById('amountDisplay').textContent = '$' + amount;
+
+  const manualDiv  = document.getElementById('manualDivider');
+  const manualNote = document.getElementById('manualNote');
+  const keyDisplay = document.getElementById('keyDisplay');
+  const copyBtn    = document.getElementById('copyBtn');
+
+  const container = document.getElementById('paypal-button-container');
+  const form = document.createElement('form');
+  form.action = 'https://www.paypal.com/donate';
+  form.method = 'post';
+  form.target = '_blank';
+  form.innerHTML =
+    '<input type="hidden" name="hosted_button_id" value="U5M6D9WTQ6GG2">' +
+    '<input type="hidden" name="amount" value="' + amount + '">' +
+    '<input type="hidden" name="custom" value="' + extId + '">' +
+    '<button type="submit" style="background:linear-gradient(135deg,#0070ba,#003087);color:#fff;border:none;border-radius:12px;padding:14px 32px;font-size:15px;font-weight:700;cursor:pointer;width:100%;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:10px;transition:opacity .15s;" onmouseover="this.style.opacity=\'.85\'" onmouseout="this.style.opacity=\'1\'">' +
+    '<svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.59 3.025-2.566 6.082-8.558 6.082H9.825l-1.197 7.564h3.12c.524 0 .968-.382 1.05-.9l.902-5.698h2.353c4.298 0 6.611-2.196 7.169-6.761z"/></svg>' +
+    'Donate with PayPal</button>';
+  container.appendChild(form);
+
+  manualDiv.style.display = 'flex';
+  manualNote.style.display = 'block';
+  manualNote.innerHTML = 'After donating, email <a href="mailto:dylanchess03@gmail.com">dylanchess03@gmail.com</a> with your PayPal transaction ID and we\'ll send your Pro key right away. Already have a key? Paste it into the <strong>Donate</strong> tab \u2192 <strong>Already have a key?</strong> box in the extension.';
+
+  copyBtn.addEventListener('click', function() {
+    navigator.clipboard.writeText(keyDisplay.textContent).then(function() {
+      copyBtn.textContent = 'Copied!';
+      setTimeout(function() { copyBtn.textContent = 'Copy Key'; }, 2000);
+    });
+  });
+</script>
+</body>
+</html>
